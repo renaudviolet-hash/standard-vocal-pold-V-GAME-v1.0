@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>POLD V GAME - Standard & Salons Vocaux</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: #161b22;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 1px solid #30363d;
+            position: relative;
+        }
+        .hidden { display: none !important; }
+        
+        /* Formulaire Connexion */
+        .avatar-container {
+            width: 80px; height: 80px; margin: 0 auto 15px auto; border-radius: 50%;
+            border: 2px dashed #5865F2; display: flex; justify-content: center; align-items: center;
+            overflow: hidden; background: #21262d; cursor: pointer;
+        }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        input[type="text"], input[type="password"] {
+            width: 85%; padding: 12px; margin: 10px 0; border-radius: 6px;
+            border: 1px solid #30363d; background: #21262d; color: white; font-size: 16px;
+        }
+        
+        /* Règles et Bannière Utilisateur */
+        .user-banner {
+            background: #21262d; border: 1px solid #30363d; padding: 12px;
+            border-radius: 8px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; text-align: left;
+        }
+        .user-banner img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #30363d; }
+        .rules-box {
+            background: #1a1f29; border: 1px solid #483698; border-radius: 8px;
+            padding: 15px; text-align: left; font-size: 13px; max-height: 150px; overflow-y: auto; margin-bottom: 15px;
+        }
+        .btn-audio { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        
+        /* Boutons Spéciaux Fondateur */
+        .btn-founder {
+            background: linear-gradient(135deg, #7c3aed, #5865F2);
+            color: white; width: 100%; padding: 14px; border-radius: 8px; border: none;
+            font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+        }
+        .btn-founder:hover { opacity: 0.9; }
+
+        /* Grille des Salons Staff / Standard */
+        .salons-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; text-align: left;
+        }
+        .salon-card {
+            background: #21262d; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px;
+            font-size: 13px; cursor: pointer; color: #c9d1d9; transition: 0.2s;
+        }
+        .salon-card:hover { background: #30363d; border-color: #5865F2; color: white; }
+
+        /* Clavier Standard */
+        .standard-banner {
+            background: #1f1a24; border: 1px solid #7c3aed; padding: 10px; border-radius: 8px;
+            margin-bottom: 20px; font-size: 13px; color: #d2a8ff; text-align: left;
+        }
+        .keypad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
+        }
+        .key-btn {
+            background: #21262d; border: 1px solid #30363d; color: white; padding: 18px;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .key-btn:hover { background: #30363d; border-color: #5865F2; }
+        
+        .hangup-btn {
+            background-color: #da3633; color: white; width: 100%; padding: 14px;
+            border-radius: 8px; border: none; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        .hangup-btn:hover { background-color: #b31d1c; }
+
+        .staff-link-container { margin-top: 15px; text-align: center; }
+        .staff-link { font-size: 13px; color: #5865F2; text-decoration: underline; cursor: pointer; }
+
+        /* Style similaire à l'ancienne appli pour la pop-up d'appel au bureau */
+        .floating-call-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 10px;
+            padding: 12px;
+            width: 240px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+            text-align: left;
+            z-index: 1000;
+        }
+        .floating-call-box h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .floating-call-box p {
+            margin: 0 0 10px 0;
+            font-size: 11px;
+            color: #8b949e;
+            line-height: 1.3;
+        }
+        .call-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-green {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-green:hover { background-color: #2ea043; }
+        
+        .btn-red {
+            background-color: #da3633;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-red:hover { background-color: #b31d1c; }
+
+        /* Visio Intégrée (Iframe) */
+        .meet-container {
+            width: 100%; height: 420px; border: none; border-radius: 8px; background: #000; margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pop-up flottante de notification d'appel pour le Fondateur (style ancienne appli) -->
+    <div id="floating-call" class="floating-call-box hidden">
+        <h4>📞 Appel au Bureau !</h4>
+        <p id="call-text">Un membre essaie d'appeler ton Bureau !</p>
+        <div class="call-actions">
+            <button class="btn-green" onclick="repondreAppel()">Décrocher</button>
+            <button class="btn-red" onclick="refuserAppel()">Refuser</button>
+        </div>
+    </div>
+
+    <!-- ÉCRAN 1 : CONNEXION -->
+    <div id="screen-login" class="container">
+        <h2>POLD V GAME</h2>
+        <p style="font-size: 13px; color: #8b949e; margin-bottom: 20px;">Standard Téléphonique & Salons Vocaux</p>
+
+        <div class="avatar-container" onclick="document.getElementById('file-input').click();">
+            <span id="avatar-text" style="font-size: 11px; color: #8b949e;">Photo</span>
+            <img id="avatar-preview" src="">
+        </div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="chargerImage(event)">
+        <p style="font-size: 12px; color: #5865F2; margin-bottom: 15px; cursor: pointer;" onclick="document.getElementById('file-input').click();">Choisis ton image de profil</p>
+
+        <input type="text" id="pseudo-input" placeholder="Ton pseudo (min. 4 lettres)..." autocomplete="off">
+        <div id="error-msg" style="color: #da3633; font-size: 12px; margin-bottom: 10px;"></div>
+
+        <button onclick="validerLogin(false)" style="width: 90%; padding: 12px; border-radius: 6px; border: none; background-color: #5865F2; color: white; font-weight: bold; cursor: pointer;">Continuer</button>
+        
+        <div class="staff-link-container">
+            <span class="staff-link" onclick="ouvrirEspaceStaff()">🔒 Espace Staff / Connexion</span>
+        </div>
+    </div>
+
+    <!-- ÉCRAN 2 : ACCUEIL / RÈGLES / ESPACE FONDATEUR -->
+    <div id="screen-rules" class="container hidden">
+        <h2>POLD V GAME</h2>
+        <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Standard Téléphonique & Salons Vocaux</p>
+
+        <div class="user-banner">
+            <img id="banner-avatar" src="">
+            <div>
+                <strong id="banner-pseudo" style="font-size: 14px;"></strong><br>
+                <span id="banner-badge" style="font-size: 11px; color: #2ea043;">● Abonné (Standard)</span>
+            </div>
+        </div>
+
+        <!-- Bouton direct si Fondateur -->
+        <div id="founder-direct-section" class="hidden">
+            <button class="btn-founder" onclick="ouvrirSalonDirect('Bureau de Paul', 'PoldVGameBureauPaul')">👑 Ouvrir mon Bureau Vocal Direct</button>
+            <p style="font-size: 12px; color: #8b949e; text-align: left; margin-bottom: 5px;">⚡ Accès rapide Staff pour modérer les salons :</p>
+            <div class="salons-grid">
+                <div class="salon-card" onclick="ouvrirSalonDirect('Salon Abonnés', 'PoldVGameSalon1')">💬 Abonnés</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Salon Général', 'PoldVGameSalon2')">🌐 Général</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Support Staff', 'PoldVGameSalon4')">🛡️ Support Staff</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Roblox Vocal', 'PoldVGameSalon5')">🎮 Roblox</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Fortnite Vocal', 'PoldVGameSalon6')">🎯 Fortnite</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Secours France', 'PoldVGameSalon7')">🚨 Secours France</div>
+                <div class="salon-card" onclick="ouvrirSalonDirect('Strasbourg RP', 'PoldVGameSalon8')">🚗 Strasbourg RP</div>
+            </div>
+        </div>
+
+        <!-- Section Règles pour membres normaux -->
+        <div id="member-rules-section">
+            <div class="rules-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong style="color: #d2a8ff;">📜 Règles & Conditions du Salon</strong>
+                    <button class="btn-audio" onclick="lireRegles()">🔊 Écouter les règles</button>
+                </div>
+                <ul style="padding-left: 15px; margin: 0; line-height: 1.4;">
+                    <li><strong>Règles Discord :</strong> Pas d'insultes, pas de spam, pas de raids.</li>
+                    <li><strong>Modération :</strong> Tolérance zéro, tout abus sera sanctionné.</li>
+                    <li><strong>Règle de l'Hôte :</strong> Le premier arrivé lance le salon.</li>
+                </ul>
+                <div style="font-size: 11px; color: #8b949e; margin-top: 8px;">
+                    <input type="checkbox" id="check-rules" disabled> <span id="lock-text">🔒 Écoutez la lecture complète pour débloquer.</span>
+                </div>
+            </div>
+
+            <button id="btn-call" class="hangup-btn" style="background-color: #30363d; cursor: not-allowed;" disabled onclick="lancerStandard()">📞 Appeler le Standard</button>
+        </div>
+
+        <div class="staff-link-container">
+            <span class="staff-link" onclick="ouvrirEspaceStaff()">🔒 Espace Staff / Connexion</span>
+        </div>
+    </div>
+
+    <!-- ÉCRAN 3 : STANDARD TÉLÉPHONIQUE (CLAVIER) -->
+    <div id="screen-standard" class="container hidden">
+        <h2>POLD V GAME</h2>
+        <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Standard Téléphonique & Salons Vocaux</p>
+
+        <div class="standard-banner">
+            🤖 <strong>Secrétaire :</strong> Tape 1 (Abonnés), 3 (Bureau de Paul), 4 (Support), ou 5 à 8 (Jeux).
+        </div>
+
+        <div class="keypad">
+            <button class="key-btn" onclick="choixSalon(1)">1<br><span style="font-size:11px; color:#8b949e;">Salon Abonnés</span></button>
+            <button class="key-btn" onclick="choixSalon(2)">2<br><span style="font-size:11px; color:#8b949e;">Général</span></button>
+            <button class="key-btn" onclick="choixSalon(3)">3<br><span style="font-size:11px; color:#8b949e;">Bureau de Paul</span></button>
+            <button class="key-btn" onclick="choixSalon(4)">4<br><span style="font-size:11px; color:#8b949e;">Support Staff</span></button>
+            <button class="key-btn" onclick="choixSalon(5)">5<br><span style="font-size:11px; color:#8b949e;">Roblox Vocal</span></button>
+            <button class="key-btn" onclick="choixSalon(6)">6<br><span style="font-size:11px; color:#8b949e;">Fortnite Vocal</span></button>
+            <button class="key-btn" onclick="choixSalon(7)">7<br><span style="font-size:11px; color:#8b949e;">Secours de France</span></button>
+            <button class="key-btn" onclick="choixSalon(8)">8<br><span style="font-size:11px; color:#8b949e;">Strasbourg RP</span></button>
+            <button class="key-btn" onclick="choixSalon('#')">#<br><span style="font-size:11px; color:#8b949e;">Aide</span></button>
+        </div>
+
+        <button class="hangup-btn" onclick="raccrocher()">✕ Raccrocher</button>
+    </div>
+
+    <!-- ÉCRAN 4 : SALON ACTIF (VISIO) -->
+    <div id="screen-salon" class="container hidden">
+        <h2 id="salon-title">Salon Actif</h2>
+        <p id="salon-status" style="color: #2ea043; font-weight: bold;">Connecté au salon vocal</p>
+        
+        <div id="visio-container"></div>
+
+        <button class="hangup-btn" onclick="quitterSalon()" style="margin-top: 15px;">Quitter le salon</button>
+    </div>
+
+    <script>
+        let avatarData = "";
+        let pseudoUtilisateur = "";
+        let estFondateur = false;
+        let salonActuel = "";
+        let demandeurActuel = "";
+
+        function chargerImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarData = e.target.result;
+                    document.getElementById('avatar-preview').src = avatarData;
+                    document.getElementById('avatar-preview').style.display = 'block';
+                    document.getElementById('avatar-text').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function validerLogin(forceFondateur) {
+            pseudoUtilisateur = document.getElementById('pseudo-input').value.trim();
+            if (pseudoUtilisateur.length < 4 && !forceFondateur) {
+                document.getElementById('error-msg').innerText = "Le pseudo doit contenir au moins 4 lettres.";
+                return;
+            }
+            if (forceFondateur) pseudoUtilisateur = "poldv";
+
+            document.getElementById('banner-pseudo').innerText = pseudoUtilisateur;
+            document.getElementById('banner-avatar').src = avatarData || "https://via.placeholder.com/50";
+            
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-rules').classList.remove('hidden');
+
+            if (estFondateur) {
+                document.getElementById('banner-badge').innerText = "👑 Staff / Fondateur";
+                document.getElementById('banner-badge').style.color = "#7c3aed";
+                document.getElementById('founder-direct-section').classList.remove('hidden');
+                document.getElementById('member-rules-section').classList.add('hidden');
+                
+                // Simuler l'arrivée d'une notification pour test visuel ou écoute
+                setTimeout(() => {
+                    if(document.getElementById('screen-rules').classList.contains('hidden') === false) {
+                        afficherNotificationAppel("MembreTest");
+                    }
+                }, 4000);
+            } else {
+                document.getElementById('founder-direct-section').classList.add('hidden');
+                document.getElementById('member-rules-section').classList.remove('hidden');
+            }
+        }
+
+        function ouvrirEspaceStaff() {
+            let code = prompt("Veuillez entrer le code d'accès Staff / Fondateur (2244) :");
+            if (code === "2244") {
+                estFondateur = true;
+                alert("Accès Fondateur validé avec succès !");
+                if(document.getElementById('pseudo-input').value.trim().length >= 4) {
+                    validerLogin(false);
+                } else {
+                    validerLogin(true);
+                }
+            } else if (code !== null) {
+                alert("Code incorrect.");
+            }
+        }
+
+        function lireRegles() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const texte = "Règles et conditions du salon Pold V Game. Premièrement, règles Discord : pas d'insultes, pas de spam. Deuxièmement, modération stricte. Veuillez écouter attentivement pour débloquer l'accès au standard.";
+                const utterance = new SpeechSynthesisUtterance(texte);
+                utterance.lang = 'fr-FR';
+                utterance.onend = function() {
+                    document.getElementById('check-rules').disabled = false;
+                    document.getElementById('check-rules').checked = true;
+                    document.getElementById('lock-text').innerText = "Règles lues et acceptées.";
+                    document.getElementById('lock-text').style.color = "#2ea043";
+
+                    const btn = document.getElementById('btn-call');
+                    btn.disabled = false;
+                    btn.style.backgroundColor = "#238636";
+                    btn.style.cursor = "pointer";
+                    btn.innerText = "📞 Appeler le Standard";
+                };
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function lancerStandard() {
+            document.getElementById('screen-rules').classList.add('hidden');
+            document.getElementById('screen-standard').classList.remove('hidden');
+            parlerRobot("Bienvenue sur le standard POLD V GAME. Veuillez sélectionner un salon.");
+        }
+
+        function choixSalon(touche) {
+            let nomsSalons = {
+                1: "Salon Abonnés",
+                2: "Salon Général",
+                3: "Bureau de Paul",
+                4: "Support Staff",
+                5: "Roblox Vocal",
+                6: "Fortnite Vocal",
+                7: "Secours de France",
+                8: "Strasbourg RP",
+                '#': "Aide du Standard"
+            };
+            salonActuel = nomsSalons[touche];
+            
+            if (touche === 3) {
+                if (estFondateur) {
+                    ouvrirSalonDirect(salonActuel, "PoldVGameBureauPaul");
+                } else {
+                    let motif = prompt("Vous demandez l'accès au Bureau de Paul. Veuillez indiquer votre motif :");
+                    if (motif) {
+                        parlerRobot("Nous avons fait la demande au fondateur. Le fondateur est peut-être absent mais ne quittez pas.");
+                        alert("Demande envoyée au Fondateur ! Veuillez patienter.");
+                        // Si une instance ouverte en tant que fondateur existe, simule l'affichage de la boîte
+                    }
+                }
+            } else {
+                let roomCode = "PoldVGameSalon" + touche;
+                ouvrirSalonDirect(salonActuel, roomCode);
+            }
+        }
+
+        function afficherNotificationAppel(pseudo) {
+            demandeurActuel = pseudo;
+            document.getElementById('call-text').innerText = `${pseudo} essaie d'appeler ton Bureau !`;
+            document.getElementById('floating-call').classList.remove('hidden');
+        }
+
+        function repondreAppel() {
+            document.getElementById('floating-call').classList.add('hidden');
+            parlerRobot("Le fondateur Paul a accepté votre demande. Vous rejoignez le bureau.");
+            ouvrirSalonDirect("Bureau de Paul", "PoldVGameBureauPaul");
+        }
+
+        function refuserAppel() {
+            let motifRefus = prompt("Veuillez indiquer la raison du refus :");
+            if (motifRefus && motifRefus.trim() !== "") {
+                document.getElementById('floating-call').classList.add('hidden');
+                parlerRobot("Votre demande a été refusée pour la raison suivante : " + motifRefus + ". Veuillez rappeler ultérieurement.");
+                alert("Refus transmis avec succès.");
+            } else {
+                alert("Veuillez saisir une raison pour refuser.");
+            }
+        }
+
+        function ouvrirSalonDirect(nom, room) {
+            document.getElementById('screen-standard').classList.add('hidden');
+            document.getElementById('screen-rules').classList.add('hidden');
+            document.getElementById('screen-salon').classList.remove('hidden');
+            document.getElementById('salon-title').innerText = "🔊 " + nom;
+            
+            const container = document.getElementById('visio-container');
+            container.innerHTML = `<iframe class="meet-container" src="https://meet.guifi.net/${room}#userInfo.displayName="${pseudoUtilisateur}"" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>`;
+            parlerRobot("Connexion au salon " + nom);
+        }
+
+        function quitterSalon() {
+            document.getElementById('visio-container').innerHTML = ""; 
+            document.getElementById('screen-salon').classList.add('hidden');
+            if (estFondateur) {
+                document.getElementById('screen-rules').classList.remove('hidden');
+            } else {
+                document.getElementById('screen-standard').classList.remove('hidden');
+            }
+        }
+
+        function raccrocher() {
+            document.getElementById('screen-standard').classList.add('hidden');
+            document.getElementById('screen-rules').classList.remove('hidden');
+        }
+
+        function parlerRobot(texte) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(texte);
+                utterance.lang = 'fr-FR';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+
+</body>
+</html>
